@@ -58,12 +58,12 @@ Three forecasting methods were applied:
 
 **Evaluation metric:** Root Mean Squared Error (RMSE) on both **train and test sets**.  
 
-The **best-performing model** was **Exponential Smoothing**, providing the most accurate predictions for weekly mean temperatures.
+The **best-performing model** was **Auto ARIMA**, providing the most accurate predictions for weekly mean temperatures.
 
 ---
 
 ## Evaluation & Results
 
 - Models were evaluated using **RMSE** on both train and test sets.  
-- **Exponential Smoothing** achieved the lowest RMSE and provided the most reliable weekly forecasts.  
+- **Auto ARIMA** achieved the lowest RMSE and provided the most reliable weekly forecasts.  
 
