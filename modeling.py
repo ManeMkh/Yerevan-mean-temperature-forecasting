@@ -182,18 +182,18 @@ def main():
     print(f"Exponential Smoothing RMSE -> Train: {rmse_train:.3f}, Test: {rmse_test:.3f}")
    
     print("\nHOLTE WINTERS FUTURE FORECAST")
-    wf.exp_smooth_model = None   # or freshly initialized object
+    wf.exp_smooth_model = None  
     future_preds = wf.forecast_future(steps=5, model_type="exp_smooth")
     print(f"Future predictions: {future_preds}")
 
     print("AUTO ARIMA FUTURE FORECAST")
-    wf.arima_model = None   # or freshly initialized object
+    wf.arima_model = None   
 
     future_arima = wf.forecast_future(steps=5, model_type="arima")
     print(f"Future Auto ARIMA predictions:\n{future_arima}")
 
     print("SARIMA FUTURE FORECAST")
-    wf.sarima_model = None   # or freshly initialized object
+    wf.sarima_model = None  
 
     future_sarima = wf.forecast_future(steps=5, model_type="sarima")
     print(f"Future SARIMA predictions:\n{future_sarima}\n")
