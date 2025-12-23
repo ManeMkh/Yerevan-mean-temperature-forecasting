@@ -47,7 +47,6 @@ class WeatherForecaster:
     
 
     def forecast(self, model_type="sarima"):
-        #n_train = len(self.train_data)
         n_test = len(self.y_test)
 
         if model_type == "sarima":
@@ -102,6 +101,39 @@ class WeatherForecaster:
             self.exp_smooth_model = model
         print(f"{model_type} model loaded from {path}")
 
+    
+    def forecast_future(self, steps=5, model_type="exp_smooth"):
+        """
+        Forecast future values for given steps using the specified model.
+        Fits the model on full data if it hasn't been fitted yet.
+        """
+        if model_type == "exp_smooth":
+            if self.exp_smooth_model is None:
+                self.exp_smooth_model = ExponentialSmoothing(
+                    self.df[self.target], trend=None, seasonal="add", seasonal_periods=52
+                ).fit()
+            future = self.exp_smooth_model.forecast(steps=steps)
+
+        elif model_type == "sarima":
+            if self.sarima_model is None:
+                self.sarima_model = SARIMAX(
+                    self.df[self.target], order=(26,0,2), seasonal_order=(2,0,3,52)
+                ).fit()
+            future = self.sarima_model.forecast(steps=steps)
+
+        elif model_type == "arima":
+            if self.arima_model is None:
+                self.arima_model = pm.auto_arima(
+                    self.df[self.target], seasonal=True, m=52, stepwise=True
+                )
+            future = self.arima_model.predict(n_periods=steps)
+
+        else:
+            raise ValueError("Model must be 'exp_smooth', 'sarima', or 'arima'")
+        
+        return future
+
+
 
 def main():
     data_path = "yerevan_weather.csv"
@@ -148,6 +180,23 @@ def main():
     train_preds, test_preds = wf.forecast("exp_smooth")
     rmse_train, rmse_test = wf.evaluate((train_preds, test_preds))
     print(f"Exponential Smoothing RMSE -> Train: {rmse_train:.3f}, Test: {rmse_test:.3f}")
+   
+    print("\nHOLTE WINTERS FUTURE FORECAST")
+    wf.exp_smooth_model = None   # or freshly initialized object
+    future_preds = wf.forecast_future(steps=5, model_type="exp_smooth")
+    print(f"Future predictions: {future_preds}")
+
+    print("AUTO ARIMA FUTURE FORECAST")
+    wf.arima_model = None   # or freshly initialized object
+
+    future_arima = wf.forecast_future(steps=5, model_type="arima")
+    print(f"Future Auto ARIMA predictions:\n{future_arima}")
+
+    print("SARIMA FUTURE FORECAST")
+    wf.sarima_model = None   # or freshly initialized object
+
+    future_sarima = wf.forecast_future(steps=5, model_type="sarima")
+    print(f"Future SARIMA predictions:\n{future_sarima}\n")
 
 
 if __name__ == "__main__":
